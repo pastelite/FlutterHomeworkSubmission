@@ -63,21 +63,28 @@ class _MyHomePageState extends State<MyHomePage> {
   TasksList loadTasks() {
     // final Map<DateTime,
     final TasksList tasks = {
+      DateTime.now().add(const Duration(days: -1)): [
+        Task(
+          title: 'Passed Task',
+          description: 'Task Description',
+          dateTime: DateTime.now().add(const Duration(days: -1)),
+        ),
+      ],
       DateTime.now(): [
         Task(
           title: 'Task 1',
           description: 'Description 1',
-          dateTime: DateTime.now(),
+          dateTime: DateTime.now().add(const Duration(hours: 1)),
           location: 'ICT Mahidol University',
         ),
         Task(
           title: 'Task 2',
           description: 'Description 2',
-          dateTime: DateTime.now(),
+          dateTime: DateTime.now().add(const Duration(hours: 2)),
         ),
         Task(
           description: 'Try no title',
-          dateTime: DateTime.now(),
+          dateTime: DateTime.now().add(const Duration(hours: 3)),
         ),
       ],
       DateTime.now().add(const Duration(days: 1)): [

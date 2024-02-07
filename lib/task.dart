@@ -23,12 +23,13 @@ class TaskTile extends StatelessWidget {
     var format = DateFormat.Hm();
     String? formattedTime =
         task.dateTime != null ? format.format(task.dateTime!) : null;
+    bool isPast = task.dateTime!.isBefore(DateTime.now());
 
     return Container(
         margin: EdgeInsets.only(bottom: 8, left: 8, right: 8),
         padding: EdgeInsets.all(8),
         decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor.withOpacity(0.3),
+            color: isPast ? Theme.of(context).primaryColor.withOpacity(0.2): Theme.of(context).primaryColor.withOpacity(0.4),
             borderRadius: BorderRadius.circular(8)),
         child: Row(
           children: [
