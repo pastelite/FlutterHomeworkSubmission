@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:geotask_mainpage/date.dart';
 import 'package:geotask_mainpage/task.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -16,29 +17,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFF70AAA7)),
-        listTileTheme: const ListTileThemeData(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-          ),
-          textColor: Colors.green,
-          tileColor: Colors.red,
-        ),
         textTheme: Typography.blackHelsinki,
         useMaterial3: true,
       ),
@@ -68,7 +47,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   num _heightFactor = 0.5;
-  
 
   void _incrementCounter() {
     print("increment");
@@ -82,18 +60,15 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _testController() {
-    print("test");
-  }
-
   TasksList loadTasks() {
-    // final Map<DateTime, 
+    // final Map<DateTime,
     final TasksList tasks = {
       DateTime.now(): [
         Task(
           title: 'Task 1',
           description: 'Description 1',
           dateTime: DateTime.now(),
+          location: 'ICT Mahidol University',
         ),
         Task(
           title: 'Task 2',
@@ -124,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.transparent ,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
           Container(
@@ -144,8 +119,10 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _testController,
-        tooltip: 'Increment',
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+        onPressed: () => {}, // for now
+        tooltip: 'Add Task',
         child: const Icon(Icons.add),
       ),
       body: Stack(
@@ -162,32 +139,32 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ],
           ),
-          Text(
-            '$_counter',
-            style: Theme.of(context).textTheme.headlineMedium,
-          ),
           SafeArea(
             child: BottomSheet(
               child: ListView.builder(
                 itemCount: _tasks.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return Column(children: [
-                    Text(
-                      _tasks.keys.elementAt(index).toString(),
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      )
-                    ),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: _tasks.values.elementAt(index).length,
-                      itemBuilder: (BuildContext context, int index2) {
-                        return TaskTile(task: _tasks.values.elementAt(index)[index2]
-                        );
-                      },
-                    ),
-                  ],);
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      DateHeader(_tasks.keys.elementAt(index)),
+                      // Text(
+                      //   _tasks.keys.elementAt(index).toString(),
+                      //   style: const TextStyle(
+                      //     fontSize: 20,
+                      //     fontWeight: FontWeight.bold,
+                      //   )
+                      // ),
+                      ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: _tasks.values.elementAt(index).length,
+                        itemBuilder: (BuildContext context, int index2) {
+                          return TaskTile(
+                              task: _tasks.values.elementAt(index)[index2]);
+                        },
+                      ),
+                    ],
+                  );
                 },
               ),
             ),
@@ -236,13 +213,17 @@ class _BottomSheetState extends State<BottomSheet> {
                 duration: Duration(milliseconds: 250),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: _heightFactor < 1 ? const BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                  ): BorderRadius.zero,
+                  borderRadius: _heightFactor < 1
+                      ? const BorderRadius.only(
+                          topLeft: Radius.circular(20),
+                          topRight: Radius.circular(20),
+                        )
+                      : BorderRadius.zero,
                   boxShadow: [
                     BoxShadow(
-                      color: _heightFactor < 1 ? Colors.black.withOpacity(0.2) : Colors.transparent,
+                      color: _heightFactor < 1
+                          ? Colors.black.withOpacity(0.2)
+                          : Colors.transparent,
                       blurRadius: 10,
                       spreadRadius: 5,
                     ),
