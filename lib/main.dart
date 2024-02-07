@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:geotask_mainpage/task.dart';
 import 'package:latlong2/latlong.dart';
 
 void main() {
@@ -30,7 +31,15 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFF70AAA7)),
+        listTileTheme: const ListTileThemeData(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+          ),
+          textColor: Colors.green,
+          tileColor: Colors.red,
+        ),
+        textTheme: Typography.blackHelsinki,
         useMaterial3: true,
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page Lol'),
@@ -58,9 +67,11 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
-  // var _draggableScrollableSheetController = DraggableScrollableController();
+  num _heightFactor = 0.5;
+  
 
   void _incrementCounter() {
+    print("increment");
     setState(() {
       // This call to setState tells the Flutter framework that something has
       // changed in this State, which causes it to rerun the build method below
@@ -73,16 +84,64 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _testController() {
     print("test");
-    // _draggableScrollableSheetController.animateTo(0.1,
-    //     duration: const Duration(milliseconds: 500), curve: Curves.ease);
+  }
+
+  TasksList loadTasks() {
+    // final Map<DateTime, 
+    final TasksList tasks = {
+      DateTime.now(): [
+        Task(
+          title: 'Task 1',
+          description: 'Description 1',
+          dateTime: DateTime.now(),
+        ),
+        Task(
+          title: 'Task 2',
+          description: 'Description 2',
+          dateTime: DateTime.now(),
+        ),
+        Task(
+          description: 'Try no title',
+          dateTime: DateTime.now(),
+        ),
+      ],
+      DateTime.now().add(const Duration(days: 1)): [
+        Task(
+          title: 'Task 3',
+          description: 'Description 3',
+          dateTime: DateTime.now().add(const Duration(days: 1)),
+        ),
+      ],
+    };
+
+    return tasks;
   }
 
   @override
   Widget build(BuildContext context) {
+    var _tasks = loadTasks();
+
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        backgroundColor: Colors.transparent ,
+        elevation: 0,
+        actions: [
+          Container(
+            margin: const EdgeInsets.only(
+              right: 10,
+            ),
+            child: CircleAvatar(
+              backgroundColor: Colors.white,
+              child: IconButton(
+                icon: const Icon(Icons.person),
+                onPressed: () {
+                  _incrementCounter();
+                },
+              ),
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _testController,
@@ -107,36 +166,32 @@ class _MyHomePageState extends State<MyHomePage> {
             '$_counter',
             style: Theme.of(context).textTheme.headlineMedium,
           ),
-          BottomSheet(
-            child: Container(
-              height: 200,
-              color: Colors.red,
-              child: const Center(
-                child: Text('Hello World'),
+          SafeArea(
+            child: BottomSheet(
+              child: ListView.builder(
+                itemCount: _tasks.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Column(children: [
+                    Text(
+                      _tasks.keys.elementAt(index).toString(),
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      )
+                    ),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: _tasks.values.elementAt(index).length,
+                      itemBuilder: (BuildContext context, int index2) {
+                        return TaskTile(task: _tasks.values.elementAt(index)[index2]
+                        );
+                      },
+                    ),
+                  ],);
+                },
               ),
             ),
           )
-          // DraggableScrollableSheet(
-          //   // snapSizes: [0.1, 0.5],
-          //   // snap: true,
-          //   // expand: true,
-          //   minChildSize: 0.5,
-          //   initialChildSize: 0.5,
-          //   maxChildSize: 1,
-          //   // controller: _draggableScrollableSheetController,
-          //   builder: (BuildContext context, ScrollController scrollController) {
-          //     return Container(
-          //       color: Colors.white,
-          //       child: ListView.builder(
-          //         controller: scrollController,
-          //         itemCount: 25,
-          //         itemBuilder: (BuildContext context, int index) {
-          //           return ListTile(title: Text('Item $index'));
-          //         },
-          //       ),
-          //     );
-          //   },
-          // ),
         ],
       ),
     );
@@ -155,7 +210,7 @@ class BottomSheet extends StatefulWidget {
 
   final double minSize;
   final double maxSize;
-  final Widget? child ;
+  final Widget? child;
   final List<num> snapSizes;
   final num snapDistance;
 
@@ -177,68 +232,69 @@ class _BottomSheetState extends State<BottomSheet> {
               duration: Duration(milliseconds: _isDragging ? 0 : 250),
               curve: Curves.easeInOut,
               heightFactor: _heightFactor,
-              child: Container(
-                // color: Colors.white,
+              child: AnimatedContainer(
+                duration: Duration(milliseconds: 250),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: const BorderRadius.only(
+                  borderRadius: _heightFactor < 1 ? const BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20),
-                  ),
+                  ): BorderRadius.zero,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
+                      color: _heightFactor < 1 ? Colors.black.withOpacity(0.2) : Colors.transparent,
                       blurRadius: 10,
                       spreadRadius: 5,
                     ),
                   ],
                 ),
                 child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onVerticalDragUpdate: (details) {
-                      var change = details.delta.dy / constraints.maxHeight;
-                      var factor = (_heightFactor - change);
-                  
-                      setState(() {
-                        _isDragging = true;
-                        _heightFactor =
-                            factor.clamp(widget.minSize, widget.maxSize);
-                      });
-                    },
-                    onVerticalDragEnd: (details) {
-                      // Snap to the nearest value
-                      for (int i = 0; i < widget.snapSizes.length; i++) {
-                        if ((_heightFactor - widget.snapSizes[i]).abs() < widget.snapDistance) {
-                          setState(() {
-                            _heightFactor = widget.snapSizes[i].toDouble();
-                          });
-                        }
-                      }
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onVerticalDragUpdate: (details) {
+                          var change = details.delta.dy / constraints.maxHeight;
+                          var factor = (_heightFactor - change);
 
-                      setState(() {
-                        _isDragging = false;
-                      });
-                    },
-                    child: Container(
-                      // margin: const EdgeInsets.symmetric(vertical: 10),
-                      padding: const EdgeInsets.all(10),
-                      child: Align(
-                        alignment: Alignment.center,
+                          setState(() {
+                            _isDragging = true;
+                            _heightFactor =
+                                factor.clamp(widget.minSize, widget.maxSize);
+                          });
+                        },
+                        onVerticalDragEnd: (details) {
+                          // Snap to the nearest value
+                          for (int i = 0; i < widget.snapSizes.length; i++) {
+                            if ((_heightFactor - widget.snapSizes[i]).abs() <
+                                widget.snapDistance) {
+                              setState(() {
+                                _heightFactor = widget.snapSizes[i].toDouble();
+                              });
+                            }
+                          }
+
+                          setState(() {
+                            _isDragging = false;
+                          });
+                        },
                         child: Container(
-                            height: 6,
-                            width: 50,
-                            decoration: BoxDecoration(
-                              color: Colors.grey,
-                              borderRadius: BorderRadius.circular(10),
-                            )),
+                          // margin: const EdgeInsets.symmetric(vertical: 10),
+                          padding: const EdgeInsets.all(10),
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Container(
+                                height: 6,
+                                width: 100,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey,
+                                  borderRadius: BorderRadius.circular(10),
+                                )),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  widget.child ?? Container()
-                ]),
+                      Expanded(child: widget.child ?? Container()),
+                    ]),
               ),
             ));
       },
