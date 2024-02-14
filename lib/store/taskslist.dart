@@ -15,7 +15,7 @@ class TasksListModel extends ChangeNotifier {
 
     _tasks[dateOnly]!.add(task);
     
-    print('Adding task: $task to date: $dateOnly');
+    // print('Adding task: $task to date: $dateOnly');
     notifyListeners();
   }
   

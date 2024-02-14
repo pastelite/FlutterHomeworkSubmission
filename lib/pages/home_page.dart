@@ -8,6 +8,8 @@ import 'package:geotask_mainpage/components/bottom_sheet.dart' as componentBotto
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 
+import '../components/map.dart';
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
@@ -51,6 +53,10 @@ class _MyHomePageState extends State<MyHomePage> {
           description: 'Task Description',
           dateTime: DateTime.now().add(const Duration(days: -1)),
         ),
+        Task(title: 'Example Task with long description', 
+        description: 'This is a long description for the task, it should be long enough to wrap to the next line'
+        'or even more than that, so that we can see how it looks like when the description is long enough to wrap to the next line', 
+        dateTime: DateTime.now().add(const Duration(hours: -10))),
       ],
       DateTime.now(): [
         Task(
@@ -128,18 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
       }),
       body: Stack(
         children: [
-          FlutterMap(
-            options: const MapOptions(
-              initialCenter: LatLng(51.509364, -0.128928),
-              initialZoom: 3.2,
-            ),
-            children: [
-              TileLayer(
-                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                userAgentPackageName: 'com.example.app',
-              ),
-            ],
-          ),
+          StreetMap(),
           SafeArea(
             child: componentBottomSheet.BottomSheet(
               child: Consumer<TasksListModel>(
@@ -150,7 +145,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 return ListView.builder(
                   itemCount: tasks.length,
                   itemBuilder: (BuildContext context, int index) {
-                    print(tasks.values.elementAt(index));
+                    // print(tasks.values.elementAt(index));
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

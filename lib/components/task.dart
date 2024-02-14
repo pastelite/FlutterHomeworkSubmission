@@ -85,7 +85,8 @@ class TaskTile extends StatelessWidget {
                           : Container(),
                       task.description != null
                           ? Text(task.description!,
-                              style: Theme.of(context).textTheme.bodyLarge)
+                              style: Theme.of(context).textTheme.bodyLarge,overflow: TextOverflow.ellipsis,
+                              )
                           : Container(),
                     ],
                   ),
