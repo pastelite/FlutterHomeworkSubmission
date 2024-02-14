@@ -4,7 +4,6 @@ import 'package:geotask_mainpage/components/task.dart';
 import 'package:geotask_mainpage/store/taskslist.dart';
 import 'package:geotask_mainpage/components/map.dart';
 import 'package:provider/provider.dart';
-import 'package:weather_icons/weather_icons.dart';
 
 class DetailPage extends StatelessWidget {
   const DetailPage({Key? key, required this.taskDate, required this.taskIndex})
@@ -17,11 +16,16 @@ class DetailPage extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           title: const Text('Detail Page'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
         ),
         body:
             Consumer<TasksListModel>(builder: (context, tasksListModel, child) {
           var task = tasksListModel.tasks[taskDate]![taskIndex];
-
           return LayoutBuilder(
             builder: (context,constraint) {
               return Column(
