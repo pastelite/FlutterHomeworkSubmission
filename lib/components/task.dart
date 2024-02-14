@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:geotask_mainpage/detail.dart';
-import 'package:geotask_mainpage/taskslist.dart';
+import 'package:geotask_mainpage/pages/detail.dart';
+import 'package:geotask_mainpage/store/taskslist.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 

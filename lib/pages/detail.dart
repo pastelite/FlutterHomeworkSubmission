@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:geotask_mainpage/task.dart';
-import 'package:geotask_mainpage/taskslist.dart';
+import 'package:geotask_mainpage/components/task.dart';
+import 'package:geotask_mainpage/store/taskslist.dart';
 import 'package:provider/provider.dart';
 
 class DetailPage extends StatelessWidget {
@@ -12,12 +12,6 @@ class DetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final Task task = Task(
-    //   title: 'Passed Task',
-    //   description: 'Task Description',
-    //   dateTime: DateTime.now().add(const Duration(days: -1)),
-    // );
-
     return Scaffold(
         appBar: AppBar(
           title: const Text('Detail Page'),
