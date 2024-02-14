@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geotask_mainpage/date.dart';
+import 'package:geotask_mainpage/detail.dart';
 import 'package:geotask_mainpage/task.dart';
+import 'package:geotask_mainpage/taskslist.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(ChangeNotifierProvider(
+      create: (context) => TasksListModel(), child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -101,7 +105,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    var _tasks = loadTasks();
+    var provider = Provider.of<TasksListModel>(context, listen: false);
+    provider.addTasksList(loadTasks());
+    // var _tasks = loadTasks();
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -125,13 +131,23 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
-        onPressed: () => {}, // for now
-        tooltip: 'Add Task',
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: Consumer<TasksListModel>(builder: (a, b, c) {
+        return FloatingActionButton(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          foregroundColor: Theme.of(context).colorScheme.onPrimary,
+          onPressed: () => {
+            b.addTask(
+              Task(
+                title: 'Task 4',
+                description: 'Description 4',
+                dateTime: DateTime.now().add(const Duration(days: 2)),
+              ),
+            )
+          }, // for now
+          tooltip: 'Add Task',
+          child: const Icon(Icons.add),
+        );
+      }),
       body: Stack(
         children: [
           FlutterMap(
@@ -148,32 +164,35 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           SafeArea(
             child: BottomSheet(
-              child: ListView.builder(
-                itemCount: _tasks.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      DateHeader(_tasks.keys.elementAt(index)),
-                      // Text(
-                      //   _tasks.keys.elementAt(index).toString(),
-                      //   style: const TextStyle(
-                      //     fontSize: 20,
-                      //     fontWeight: FontWeight.bold,
-                      //   )
-                      // ),
-                      ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: _tasks.values.elementAt(index).length,
-                        itemBuilder: (BuildContext context, int index2) {
-                          return TaskTile(
-                              task: _tasks.values.elementAt(index)[index2]);
-                        },
-                      ),
-                    ],
-                  );
-                },
-              ),
+              child: Consumer<TasksListModel>(
+                  builder: (context, tasksModel, child) {
+                // tasksModel.addTasksList(loadTasks());
+                var tasks = tasksModel.tasks;
+
+                return ListView.builder(
+                  itemCount: tasks.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    print(tasks.values.elementAt(index));
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        DateHeader(tasks.keys.elementAt(index)),
+                        ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: tasks.values.elementAt(index).length,
+                          itemBuilder: (BuildContext context, int index2) {
+                            return TaskTile(
+                              task: tasks.values.elementAt(index)[index2],
+                              taskDate: tasks.keys.elementAt(index),
+                              taskIndex: index2,
+                            );
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+              }),
             ),
           )
         ],
